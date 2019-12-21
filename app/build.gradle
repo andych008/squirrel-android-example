@@ -22,13 +22,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:support-v4:21.0.3'
-    provided 'com.google.android:android:4.1.1.4'
-    provided 'org.projectlombok:lombok:1.14.8'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:support-v4:21.0.3'
+    compileOnly 'com.google.android:android:4.1.1.4'
+    compileOnly 'org.projectlombok:lombok:1.18.10'
+    annotationProcessor 'org.projectlombok:lombok:1.18.10'
     // --=[ FSM ]=--
     compile(group: 'org.squirrelframework', name: 'squirrel-foundation', version:'0.3.4') {
         exclude(group: 'javaassist', module: 'javassist')
@@ -43,4 +48,6 @@ dependencies {
     compile('com.github.tony19:logback-android-core:1.1.1-3')
     // --=[ logger facade ]=--
     compile group: 'org.slf4j', name: 'slf4j-api', version:'1.7.5'
+
+
 }

@@ -39,12 +39,24 @@ public class MainActivity extends Activity implements Observer<CrossLightsContro
         green = (ImageView) findViewById(R.id.green);
 
         init();
+
+        findViewById(R.id.redBtn).setOnClickListener(view -> {
+            crossLightsController.fire(CrossLightsController.Event.TurnRed, Object.class);
+        });
+
+        findViewById(R.id.yellowBtn).setOnClickListener(view -> {
+            crossLightsController.fire(CrossLightsController.Event.TurnYellow, Object.class);
+        });
+        findViewById(R.id.greenBtn).setOnClickListener(view -> {
+            crossLightsController.fire(CrossLightsController.Event.TurnGreen, Object.class);
+        });
     }
 
     protected void init() {
         crossLightsController = CrossLightsController.create();
         crossLightsController.addObserver(this);
         crossLightsController.start();
+        updateView();
     }
 
     protected void updateView() {
