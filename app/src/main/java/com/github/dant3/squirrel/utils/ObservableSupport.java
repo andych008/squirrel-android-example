@@ -1,59 +1,44 @@
 package com.github.dant3.squirrel.utils;
 
-import org.apache.commons.lang3.Validate;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+public class ObservableSupport implements Observable {
 
-public class ObservableSupport<T> implements Observable<T> {
-    private final T observed;
-    private final Set<Observer<? super T>> observers = new CopyOnWriteArraySet<Observer<? super T>>();
+    private CopyOnWriteArrayList<Event> objects;
 
-    public static <T> ObservableSupport<T> of(T observed) {
-        return new ObservableSupport<T>(observed);
-    }
-
-    @SuppressWarnings("unchecked")
-    protected ObservableSupport() {
-        this.observed = (T) this;
-    }
-
-    public ObservableSupport(T observed) {
-        this.observed = Validate.notNull(observed);
+    public ObservableSupport() {
+        objects = new CopyOnWriteArrayList<>();
     }
 
     @Override
-    public void addObserver(Observer<? super T> observer) {
-        observers.add(Validate.notNull(observer));
+    public void addObserver(Object object, String methodName, Object... args) {
+        objects.add(new Event(object, methodName, args));
     }
 
+    //简化处理，只判断object(多数情况足够)
     @Override
-    public void removeObserver(Observer<? super T> observer) {
-        observers.remove(Validate.notNull(observer));
+    public void removeObserver(Object object) {
+        for (Event event : objects) {
+            if (event.object == object) {
+                objects.remove(event);
+                break;
+            }
+        }
     }
 
     @Override
     public void removeObservers() {
-        observers.clear();
+        objects.clear();
     }
 
     @Override
-    public int observersCount() {
-        return observers.size();
-    }
-
-    @Override
-    public void notifyObservers() {
-        notifyObservers(getObserved());
-    }
-
-    protected final void notifyObservers(T observed) {
-        for (Observer<? super T> observer : observers) {
-            observer.handleUpdate(observed);
+    public void notifyX() {
+        try {
+            for (Event event : objects) {
+                event.invoke();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }
-
-    protected T getObserved() {
-        return observed;
     }
 }

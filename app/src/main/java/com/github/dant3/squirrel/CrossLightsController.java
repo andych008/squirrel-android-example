@@ -22,22 +22,21 @@ import android.util.Log;
 import com.github.dant3.squirrel.utils.Observable;
 import com.github.dant3.squirrel.utils.ObservableSupport;
 
-import lombok.NoArgsConstructor;
-import lombok.experimental.Delegate;
-import lombok.extern.slf4j.Slf4j;
 import org.squirrelframework.foundation.fsm.AnonymousAction;
 import org.squirrelframework.foundation.fsm.StateMachineBuilder;
 import org.squirrelframework.foundation.fsm.StateMachineBuilderFactory;
 import org.squirrelframework.foundation.fsm.impl.AbstractStateMachine;
 
-@Slf4j
+import lombok.experimental.Delegate;
+
 public class CrossLightsController extends
         AbstractStateMachine<CrossLightsController, Light, CrossLightsController.Event, Object>
-        implements Observable<CrossLightsController> {
+        implements Observable {
 
     @Delegate
-    private final ObservableSupport<CrossLightsController> observableSupport =
-            new ObservableSupport<CrossLightsController>(this);
+    private final ObservableSupport observableSupport =
+            new ObservableSupport();
+
 
     public static CrossLightsController create() {
         StateMachineBuilder<CrossLightsController, Light, Event, Object> builder =
@@ -57,14 +56,13 @@ public class CrossLightsController extends
         return builder.newStateMachine(Light.RED);
     }
 
-    @NoArgsConstructor
     private static class FireEventAfter extends AnonymousAction<CrossLightsController, Light, Event, Object> {
 
         private final Handler handler=new Handler();
         @Override
         public void execute(Light from, Light to, Event event, Object context, CrossLightsController stateMachine) {
             handler.post(() -> {
-                stateMachine.notifyObservers();
+                stateMachine.notifyX();
                 Log.i("CrossLightsController", "After1 execute() called with: from = [" + from + "], to = [" + to + "], event = [" + event + "], context = [" + context + "], stateMachine = [" + stateMachine + "]");
             });
         }

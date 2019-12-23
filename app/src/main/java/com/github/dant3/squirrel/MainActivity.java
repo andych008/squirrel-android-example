@@ -20,9 +20,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import com.github.dant3.squirrel.utils.Observer;
 
-public class MainActivity extends Activity implements Observer<CrossLightsController> {
+public class MainActivity extends Activity {
     private CrossLightsController crossLightsController;
 
     protected ImageView red;
@@ -54,12 +53,14 @@ public class MainActivity extends Activity implements Observer<CrossLightsContro
 
     protected void init() {
         crossLightsController = CrossLightsController.create();
-        crossLightsController.addObserver(this);
+        crossLightsController.addObserver(this, "updateView");
         crossLightsController.start();
+
+
         updateView();
     }
 
-    protected void updateView() {
+    public void updateView() {
         Light currentLight = crossLightsController.getCurrentState();
         switch (currentLight) {
             case RED:
@@ -78,10 +79,5 @@ public class MainActivity extends Activity implements Observer<CrossLightsContro
                 green.setVisibility(View.VISIBLE);
                 break;
         }
-    }
-
-    @Override
-    public void handleUpdate(CrossLightsController updatedObject) {
-        updateView();
     }
 }
